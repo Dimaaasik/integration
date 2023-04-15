@@ -2,7 +2,7 @@
 import pygame
 import math
 import time
-from static import flatten
+from static import flatten , blit_rorate_center
 
 GRASS = flatten(pygame.image.load("asets/grass.jpg"), 2.5)
 TRACK = flatten(pygame.image.load("asets/track.png"), 0.9)
@@ -18,19 +18,52 @@ WIDTH = TRACK.get_width()   # Получение ширины и высоты и
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Test Game")
+
+
+
 FPS = 90
 
+# Тут начинаются изменения , поскольку не планируются боты => класс не является абстрактным и будет использоваться для одной машины
+class Car:
 
+    IMG = RED_CAR # Поскольку задумка изменена и машина будет только одна я добавил передачу прямо в классе , !!!! Можно улучшить читабельность перед здачей если закинуть в инит
+    START_POS = (180, 200) # так, же можно передать сразу, являются индивидуальными для класса
+    def __init__(self, max_speed, rotation_speed):
+        self.img = self.IMG
+        self.max_speed = max_speed
+        self.vel = 0
+        self.rotation_speed = rotation_speed
+        self.angle = 0
+        self.x , self.y = self.START_POS
+
+    def rotate(self, left = False, right = False):
+        if left:
+            self.angle += self.rotation_speed
+        elif right:
+            self.angle -= self.rotation_speed
+
+    def draw(self, win):
+        blit_rorate_center(win, self.img, (self.x, self.y), self.angle)
+
+
+
+def pictures(imageges, win, player_car):
+    for img, pos in imageges:
+        win.blit(img, pos)
+
+    player_car.draw(win)
+    pygame.display.update()
 
 run = True
 clock = pygame.time.Clock()
+img_disk = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, (138, 240))]
+player_car = Car( 4 , 6)
+
 
 while run:
     clock.tick(FPS)
+    pictures(img_disk, WIN, player_car)
 
-    WIN.blit(GRASS, (0, 0))
-    WIN.blit(TRACK, (0, 0))
-    WIN.blit(FINISH, (138, 300))
     #WIN.blit(RED_CAR, (150, 300))
     pygame.display.update()
     for event in pygame.event.get():
@@ -38,5 +71,10 @@ while run:
             run = False
             break
 
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_a]:
+        player_car.rotate(left= True)
+    if keys[pygame.K_d]:
+        player_car.rotate(right= True)
 
 pygame.quit()
