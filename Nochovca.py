@@ -77,6 +77,11 @@ class Car:
         poi = mask.overlap(car_mask, offset)
         return poi
 
+    def reset(self):
+        self.x, self.y = self.START_POS
+        self.angle = 0
+        self.vel = 0
+
 def pictures(imageges, win, player_car):
     for img, pos in imageges:
         win.blit(img, pos)
@@ -118,5 +123,6 @@ while run:
         player_car.reduce_speed()
 
     if player_car.collide(TRACK_BORDER_MASK) != None:
-        print("collide")
+        print("Car.START_POS[0]")
+        player_car.reset()
 pygame.quit()
