@@ -1,12 +1,7 @@
 # Лабораторна робота 1 ,Branch Nochovca
 import pygame
 import math
-import time
 from static import flatten , blit_rorate_center
-
-
-import threading
-pygame.init()
 
 
 GRASS = flatten(pygame.image.load("asets/grass.jpg"), 2.5)
@@ -25,7 +20,6 @@ WIDTH = TRACK.get_width()   # Получение ширины и высоты и
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Test Game")
-
 
 
 FPS = 90
@@ -101,9 +95,7 @@ img_disk = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, (138, 240))]
 player_car = Car( 4 , 6)
 
 
-
 counter = 3000
-
 
 while run:
     for e in pygame.event.get():
