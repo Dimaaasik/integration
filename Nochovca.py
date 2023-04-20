@@ -10,6 +10,9 @@ TRACK = flatten(pygame.image.load("asets/track.png"), 0.9)
 TRACK_BORDER = flatten(pygame.image.load("asets/track-border.png"), 0.9)
 TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
 FINISH = pygame.image.load("asets/finish.png")
+FINISH_MASK = pygame.mask.from_surface(FINISH)
+FINISH_POSITION = (138, 240)
+
 
 
 RED_CAR = flatten(pygame.image.load("asets/red-car.png"), 0.4)
@@ -92,7 +95,7 @@ def pictures(imageges, win, player_car):
 
 run = True
 clock = pygame.time.Clock()
-img_disk = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, (138, 240)), (TRACK_BORDER, ( 0, 0))]
+img_disk = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, (FINISH_POSITION)), (TRACK_BORDER, ( 0, 0))]
 player_car = Car( 4 , 6)
 
 
@@ -105,7 +108,8 @@ while run:
             run = False
 
     counter -= 1
-    print(counter)
+    if (counter % 10) == 0:
+        print(counter)
     if not counter:
         counter = 3000
         player_car.reset()
@@ -138,4 +142,14 @@ while run:
     if player_car.collide(TRACK_BORDER_MASK) is not None:
         player_car.reset()
         counter = 3000
+
+    finish_poi_collide = player_car.collide(FINISH_MASK, *FINISH_POSITION)
+    if finish_poi_collide is not None:
+        if finish_poi_collide[1] == 0:
+            player_car.reset()
+            print('WRONG DIRRECTION')
+
+        else:
+            print('WIN!!')
+            run = False
 pygame.quit()
