@@ -9,8 +9,8 @@ TRACK = flatten(pygame.image.load("asets/track.png"), 0.9)
 
 TRACK_BORDER = flatten(pygame.image.load("asets/track-border.png"), 0.9)
 TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
+FINISH = pygame.image.load("asets/finish.png")
 
-FINISH = flatten(pygame.image.load("asets/finish.png"), 0.82)
 
 RED_CAR = flatten(pygame.image.load("asets/red-car.png"), 0.4)
 WHITE_CAR = flatten(pygame.image.load("asets/white-car.png"), 0.4)
@@ -26,6 +26,7 @@ FPS = 90
 
 # Тут начинаются изменения , поскольку не планируются боты => класс не является абстрактным и будет использоваться для одной машины
 class Car:
+
 
     IMG = RED_CAR # Поскольку задумка изменена и машина будет только одна я добавил передачу прямо в классе , !!!! Можно улучшить читабельность перед здачей если закинуть в инит
     START_POS = (180, 200) # так, же можно передать сразу, являются индивидуальными для класса
@@ -91,7 +92,7 @@ def pictures(imageges, win, player_car):
 
 run = True
 clock = pygame.time.Clock()
-img_disk = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, (138, 240))]
+img_disk = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, (138, 240)), (TRACK_BORDER, ( 0, 0))]
 player_car = Car( 4 , 6)
 
 
