@@ -102,35 +102,6 @@ player_car = Car( 4 , 6)
 
 
 
-# TIMER
-# def timer():
-#     global counter
-#
-#     while counter > 0:
-#         time.sleep(1)  # ждем 1 секунду
-#         counter -= 1  # уменьшаем счетчик
-#         print(counter)
-#         text = str(counter).rjust(3)
-#         font = pygame.font.Font(None, 36)
-#         text_surface = font.render(text, True, (255, 255, 255))
-#         text_rect = text_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-#         WIN.blit(text_surface, text_rect)
-#     if counter <= 0:
-#         timer()
-#         player_car.reset()
-#
-# def timer_reset():
-#     counter = 10
-#     timer()
-#
-#
-# counter = 10
-# counter_lock = threading.Lock()
-# timer_thread = threading.Thread(target=timer)
-#
-# starter = 0
-
-
 counter = 1500
 
 
