@@ -2,9 +2,10 @@
 import pygame
 import math
 from static import flatten , blit_rorate_center
+pygame.font.init()
 
 
-GRASS = flatten(pygame.image.load("asets/grass.jpg"), 2.5)
+GRASS = flatten(pygame.image.load("asets/grass.jpg"), 0.37)
 TRACK = flatten(pygame.image.load("asets/track.png"), 0.9)
 
 TRACK_BORDER = flatten(pygame.image.load("asets/track-border.png"), 0.9)
@@ -15,11 +16,12 @@ FINISH_POSITION = (138, 240)
 
 
 
-RED_CAR = flatten(pygame.image.load("asets/red-car.png"), 0.4)
-WHITE_CAR = flatten(pygame.image.load("asets/white-car.png"), 0.4)
+RED_CAR = flatten(pygame.image.load("asets/red-car.png"), 0.15)
 
 HEIGHT = TRACK.get_height()
 WIDTH = TRACK.get_width()   # Получение ширины и высоты из параметров трека т.к. они являются оптимальными для проекта и позволяют избегать искажений
+
+MAIN_FONT = pygame.font.SysFont("comicsans", 40)
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Test Game")
@@ -27,12 +29,45 @@ pygame.display.set_caption("Test Game")
 
 FPS = 90
 
+
+class GameBar:
+
+    TIME = [3000, 1000, 950, 900, 870]
+    SPEED = [4, 5 , 6 ,7, 8]
+    ROTATION = [6, 7, 7, 7, 7]
+
+    LEVELS = 5
+
+    def __init__(self, level = 0):
+        self.level = level
+        self.speed = self.SPEED[level]
+        self.rotation = self.ROTATION[0]
+        self.statrted = False
+
+    def next_level(self):
+        self.level += 1
+        self.statrted = False
+
+    def reset(self):
+        self.level = 0
+        self.statrted = False
+
+    def game_finished(self):
+        return self.level > self.LEVELS
+
+    def start(self):
+        self.statrted = True
+        self.time = self.TIME[self.level]
+
+
+
+
 # Тут начинаются изменения , поскольку не планируются боты => класс не является абстрактным и будет использоваться для одной машины
 class Car:
 
 
     IMG = RED_CAR # Поскольку задумка изменена и машина будет только одна я добавил передачу прямо в классе , !!!! Можно улучшить читабельность перед здачей если закинуть в инит
-    START_POS = (180, 200) # так, же можно передать сразу, являются индивидуальными для класса
+    START_POS = (160, 180) # так, же можно передать сразу, являются индивидуальными для класса
     def __init__(self, max_speed, rotation_speed):
         self.img = self.IMG
         self.max_speed = max_speed
@@ -96,8 +131,10 @@ def pictures(imageges, win, player_car):
 run = True
 clock = pygame.time.Clock()
 img_disk = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, (FINISH_POSITION)), (TRACK_BORDER, ( 0, 0))]
-player_car = Car( 4 , 6)
 
+
+player_car = Car( 4 , 6) # Инициализация машинки , тут задаются основные параметры
+game_bar = GameBar()
 
 counter = 3000
 
@@ -148,6 +185,7 @@ while run:
         if finish_poi_collide[1] == 0:
             player_car.reset()
             print('WRONG DIRRECTION')
+            counter = 3000
 
         else:
             print('WIN!!')
