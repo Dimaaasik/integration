@@ -52,6 +52,7 @@ class GameBar:
 
     def select_level(self, level):
         self.level = level
+        player_car.configuration(level)
         game_bar.start()
 
     def reset(self):
@@ -68,6 +69,8 @@ class GameBar:
         print(self.time)
         print(self.speed)
         print(self.rotation)
+
+
 
 
 
@@ -129,6 +132,12 @@ class Car:
         self.angle = 0
         self.vel = 0
 
+    def configuration(self, level):
+        self.max_speed = game_bar.SPEED[level]
+        self.rotation_speed = game_bar.ROTATION[level]
+        #counter = game_bar.TIME[level]
+        #print('counter = ', counter)
+
 def pictures(imageges, win, player_car):
     for img, pos in imageges:
         win.blit(img, pos)
@@ -145,7 +154,7 @@ img_disk = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, (FINISH_POSITION)), (TRAC
 player_car = Car( 4 , 6) # Инициализация машинки , тут задаются основные параметры
 game_bar = GameBar()
 
-# counter = 3000
+#counter = ''
 
 while run:
     # for e in pygame.event.get():
@@ -161,7 +170,6 @@ while run:
     #     player_car.reset()
     keys = pygame.key.get_pressed()
     clock.tick(FPS)
-    pictures(img_disk, WIN, player_car)
 
     while not game_bar.statrted:
         keys = pygame.key.get_pressed()
@@ -173,25 +181,20 @@ while run:
                 run = False
                 pygame.quit()
                 break
-            # if event.type == pygame.KEYDOWN:
-            #     game_bar.start()
 
             if keys[pygame.K_1]:
                 game_bar.select_level(0)
-                player_car.max_speed = game_bar.SPEED[0]
             elif keys[pygame.K_2]:
                 game_bar.select_level(1)
-                player_car.max_speed = game_bar.SPEED[1]
             elif keys[pygame.K_3]:
                 game_bar.select_level(2)
-                player_car.max_speed = game_bar.SPEED[2]
             elif keys[pygame.K_4]:
                 game_bar.select_level(3)
-                player_car.max_speed = game_bar.SPEED[3]
             elif keys[pygame.K_5]:
                 game_bar.select_level(4)
-                player_car.max_speed = game_bar.SPEED[4]
 
+        # Реализация фона и скинов
+    pictures(img_disk, WIN, player_car)
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
