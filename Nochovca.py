@@ -21,7 +21,7 @@ WIN_IMG = flatten(pygame.image.load("asets/win.png"), 0.85)
 RED_CAR = flatten(pygame.image.load("asets/red-car.png"), 0.15)
 
 HEIGHT = TRACK.get_height()
-WIDTH = TRACK.get_width()   # Получение ширины и высоты из параметров трека т.к. они являются оптимальными для проекта и позволяют избегать искажений
+WIDTH = TRACK.get_width()
 
 MAIN_FONT = pygame.font.SysFont("comicsans", 41)
 
@@ -37,7 +37,7 @@ FPS = 90
 class GameBar:
 
     TIME = [3000, 1500, 1200, 1000, 950]
-    SPEED = [4, 50 , 6 ,7, 8]
+    SPEED = [4, 5 , 6 ,7, 8]
     ROTATION = [6, 7, 7, 7, 7]
 
     LEVELS = 4
@@ -49,40 +49,52 @@ class GameBar:
         self.statrted = False
         self.counter = self.TIME[level]
     def next_level(self):
+        '''
+        Change level, when car cross finish line.
+        '''
         self.level += 1
         if self.level > self.LEVELS:
             game_bar.game_finished()
         else:
             self.statrted = True
             self.counter = self.TIME[self.level]
-            player_car.speed = self.SPEED[self.level]
-            player_car.rotation = self.ROTATION[self.level]
+            player_car.configuration(self.level)
             player_car.start_position()
-    def select_level(self, level):
+    def select_level(self, level:int):
+        '''
+        Give opportunity player select level in menu.
+        :param level: int
+        '''
         self.level = level
         player_car.configuration(level)
         game_bar.start()
 
     def reset(self):
+        '''
+        Reset levels.
+        '''
         self.level = 0
         self.statrted = False
 
     def reset_level(self):
+        '''
+        Reset counter, used when car collide track border.
+        '''
         self.counter = self.TIME[self.level]
 
     def game_finished(self):
-        #blit_text_center(WIN, MAIN_FONT, "Congratilations you passed all levels")
-        #player_car.vel = 0
+        '''
+        End game when car passed all levels.
+        '''
         WIN.blit(WIN_IMG, (0, 0))
         pygame.display.update()
-        # for event in pygame.event.get():
-        #     if event.type == pygame.QUIT:
-        #         pygame.quit()
-        # self.statrted = False
         pygame.quit()
         return self.level > self.LEVELS
 
     def start(self):
+        '''
+        Start current level.
+        '''
         self.statrted = True
         self.counter = self.TIME[self.level]
 
@@ -90,16 +102,14 @@ class GameBar:
 
 
 
-
-# Тут начинаются изменения , поскольку не планируются боты => класс не является абстрактным и будет использоваться для одной машины
 class Car:
 
 
-    IMG = RED_CAR # Поскольку задумка изменена и машина будет только одна я добавил передачу прямо в классе , !!!! Можно улучшить читабельность перед здачей если закинуть в инит
+    IMG = RED_CAR
 
-    START_POS = (160, 180) # так, же можно передать сразу, являются индивидуальными для класса
-    #START_POS = (160, 300) # для тестов
-    def __init__(self, max_speed, rotation_speed):
+    #START_POS = (160, 180)
+    START_POS = (160, 300) # Cheat ^^
+    def __init__(self, max_speed:float, rotation_speed:float):
         self.img = self.IMG
         self.max_speed = max_speed
         self.vel = 0
@@ -108,24 +118,44 @@ class Car:
         self.x , self.y = self.START_POS
         self.acceleration = 0.1
 
-    def rotate(self, left = False, right = False):
+    def rotate(self, left: bool =False, right: bool =False):
+        '''
+        Rotate car rectangle.
+        :param left: Bool parameter which give direction on which car will be rotatating
+        :param right: Bool parameter which give direction on which car will be rotatating
+        '''
         if left:
             self.angle += self.rotation_speed
         elif right:
             self.angle -= self.rotation_speed
 
     def draw(self, win):
+        '''
+        Draw car image.
+        :param win: Surface of game area
+        :param win: Surface of game area
+        :return:
+        '''
         blit_rorate_center(win, self.img, (self.x, self.y), self.angle)
 
     def move(self):
+        '''
+        Car moving.
+        '''
         self.vel = min(self.vel + self.acceleration, self.max_speed)
         self.vrum()
 
     def move_back(self):
+        '''
+        Car moving back.
+        '''
         self.vel = max(self.vel - self.acceleration, -2)
         self.vrum()
 
     def vrum(self):
+        '''
+        Car rotating while moving.
+        '''
         radians = math.radians(self.angle)
         vertical = math.cos(radians) * self.vel
         horizontal = math.sin(radians) * self.vel
@@ -134,6 +164,9 @@ class Car:
         self.y -= vertical
 
     def reduce_speed(self):
+        '''
+        Reduce speed when player don't push W.
+        '''
         if self.vel >= 0:
             self.vel = max(self.vel - self.acceleration / 2, 0)
         else:
@@ -141,27 +174,48 @@ class Car:
         self.vrum()
 
     def collide(self, mask, x = 0, y = 0):
+        '''
+        Handle colliding player's car and track.
+        :param mask: mask of the track
+        :return: colliding result
+        '''
         car_mask = pygame.mask.from_surface(self.img)
         offset = ( int(self.x - x), int(self.y - y))
         poi = mask.overlap(car_mask, offset)
         return poi
 
     def reset(self):
+        '''
+        Change  car speed, angle, level, position on start value.
+        '''
         self.x, self.y = self.START_POS
         self.angle = 0
         self.vel = 0
         game_bar.reset_level()
 
     def start_position(self):
+        '''
+        Change  car speed, angle, position on start value.
+        '''
         self.x, self.y = self.START_POS
         self.angle = 0
         self.vel = 0
-    def configuration(self, level):
+    def configuration(self, level:int):
+        '''
+        Changing car speed, car rotation speed, counter on current level values.
+        '''
         self.max_speed = game_bar.SPEED[level]
         self.rotation_speed = game_bar.ROTATION[level]
         self.counter = game_bar.TIME[level]
 
 def pictures(imageges, win, player_car):
+    '''
+    Display images array.
+    :param imageges: Array of background images.
+    :param win: Surface of game area
+    :param player_car:
+    :return:
+    '''
     for img, pos in imageges:
         win.blit(img, pos)
 
@@ -183,7 +237,7 @@ clock = pygame.time.Clock()
 img_disk = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, (FINISH_POSITION)), (TRACK_BORDER, ( 0, 0))]
 
 
-player_car = Car( 4 , 6) # Инициализация машинки , тут задаются основные параметры, Позже изменяются
+player_car = Car( 4 , 6) # Car initialization
 game_bar = GameBar()
 
 
@@ -214,7 +268,7 @@ while run:
             elif keys[pygame.K_5]:
                 game_bar.select_level(4)
 
-        # Реализация фона и скинов
+        # realization background changing and skin car changing
     game_bar.counter -= 1
 
     if not game_bar.counter:
@@ -259,7 +313,6 @@ while run:
             if  (game_bar.level < game_bar.LEVELS):
                 game_bar.next_level()
             else:
-                game_bar.counter = 9999
                 game_bar.game_finished()
 
 
