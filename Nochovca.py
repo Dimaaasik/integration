@@ -1,7 +1,7 @@
 # Лабораторна робота 1 ,Branch Nochovca
 import pygame
 import math
-from static import flatten , blit_rorate_center
+from static import flatten , blit_rorate_center, blit_text_center
 pygame.font.init()
 
 
@@ -21,7 +21,9 @@ RED_CAR = flatten(pygame.image.load("asets/red-car.png"), 0.15)
 HEIGHT = TRACK.get_height()
 WIDTH = TRACK.get_width()   # Получение ширины и высоты из параметров трека т.к. они являются оптимальными для проекта и позволяют избегать искажений
 
-MAIN_FONT = pygame.font.SysFont("comicsans", 40)
+MAIN_FONT = pygame.font.SysFont("comicsans", 41)
+
+
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Test Game")
@@ -41,12 +43,16 @@ class GameBar:
     def __init__(self, level = 0):
         self.level = level
         self.speed = self.SPEED[level]
-        self.rotation = self.ROTATION[0]
+        self.rotation = self.ROTATION[level]
         self.statrted = False
 
     def next_level(self):
         self.level += 1
         self.statrted = False
+
+    def select_level(self, level):
+        self.level = level
+        game_bar.start()
 
     def reset(self):
         self.level = 0
@@ -58,7 +64,10 @@ class GameBar:
     def start(self):
         self.statrted = True
         self.time = self.TIME[self.level]
-
+        print(self.level)
+        print(self.time)
+        print(self.speed)
+        print(self.rotation)
 
 
 
@@ -136,22 +145,52 @@ img_disk = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, (FINISH_POSITION)), (TRAC
 player_car = Car( 4 , 6) # Инициализация машинки , тут задаются основные параметры
 game_bar = GameBar()
 
-counter = 3000
+# counter = 3000
 
 while run:
-    for e in pygame.event.get():
+    # for e in pygame.event.get():
+    #
+    #     if e.type == pygame.QUIT:
+    #         run = False
 
-        if e.type == pygame.QUIT:
-            run = False
-
-    counter -= 1
-    if (counter % 10) == 0:
-        print(counter)
-    if not counter:
-        counter = 3000
-        player_car.reset()
+    # counter -= 1
+    # if (counter % 10) == 0:
+    #     print(counter)
+    # if not counter:
+    #     counter = 3000
+    #     player_car.reset()
+    keys = pygame.key.get_pressed()
     clock.tick(FPS)
     pictures(img_disk, WIN, player_car)
+
+    while not game_bar.statrted:
+        keys = pygame.key.get_pressed()
+        blit_text_center(WIN, MAIN_FONT, "Press key from 1 - 5  to select level" )
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+                break
+            # if event.type == pygame.KEYDOWN:
+            #     game_bar.start()
+
+            if keys[pygame.K_1]:
+                game_bar.select_level(0)
+                player_car.max_speed = game_bar.SPEED[0]
+            elif keys[pygame.K_2]:
+                game_bar.select_level(1)
+                player_car.max_speed = game_bar.SPEED[1]
+            elif keys[pygame.K_3]:
+                game_bar.select_level(2)
+                player_car.max_speed = game_bar.SPEED[2]
+            elif keys[pygame.K_4]:
+                game_bar.select_level(3)
+                player_car.max_speed = game_bar.SPEED[3]
+            elif keys[pygame.K_5]:
+                game_bar.select_level(4)
+                player_car.max_speed = game_bar.SPEED[4]
 
     pygame.display.update()
     for event in pygame.event.get():
@@ -159,7 +198,7 @@ while run:
             run = False
             break
 
-    keys = pygame.key.get_pressed()
+
 
     moved = False
     if keys[pygame.K_a]:
