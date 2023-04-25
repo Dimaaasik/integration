@@ -45,7 +45,7 @@ class GameBar:
         self.speed = self.SPEED[level]
         self.rotation = self.ROTATION[level]
         self.statrted = False
-
+        self.counter = self.TIME[level]
     def next_level(self):
         self.level += 1
         self.statrted = False
@@ -59,16 +59,16 @@ class GameBar:
         self.level = 0
         self.statrted = False
 
+    def reset_level(self):
+        self.counter = self.TIME[self.level]
+
     def game_finished(self):
         return self.level > self.LEVELS
 
     def start(self):
         self.statrted = True
         self.time = self.TIME[self.level]
-        print(self.level)
-        print(self.time)
-        print(self.speed)
-        print(self.rotation)
+
 
 
 
@@ -131,16 +131,25 @@ class Car:
         self.x, self.y = self.START_POS
         self.angle = 0
         self.vel = 0
+        game_bar.reset_level()
 
     def configuration(self, level):
         self.max_speed = game_bar.SPEED[level]
         self.rotation_speed = game_bar.ROTATION[level]
-        #counter = game_bar.TIME[level]
-        #print('counter = ', counter)
+        counter = game_bar.TIME[level]
 
 def pictures(imageges, win, player_car):
     for img, pos in imageges:
         win.blit(img, pos)
+
+    level_text = MAIN_FONT.render(f"Level {game_bar.level + 1}", 1, (230, 230, 230))
+    win.blit(level_text, (10, HEIGHT - level_text.get_height() - 80))
+
+    time_text = MAIN_FONT.render(f"Time {game_bar.counter}", 1, (230, 230, 230))
+    win.blit(time_text, (10, HEIGHT - level_text.get_height() - 40))
+
+    speed_text = MAIN_FONT.render(f"Speed {round(player_car.vel, 1)} p/x", 1, (230, 230, 230))
+    win.blit(speed_text, (10, HEIGHT - level_text.get_height()))
 
     player_car.draw(win)
     pygame.display.update()
@@ -151,23 +160,12 @@ clock = pygame.time.Clock()
 img_disk = [(GRASS, (0, 0)), (TRACK, (0, 0)), (FINISH, (FINISH_POSITION)), (TRACK_BORDER, ( 0, 0))]
 
 
-player_car = Car( 4 , 6) # Инициализация машинки , тут задаются основные параметры
+player_car = Car( 4 , 6) # Инициализация машинки , тут задаются основные параметры, Позже изменяются
 game_bar = GameBar()
 
-#counter = ''
 
 while run:
-    # for e in pygame.event.get():
-    #
-    #     if e.type == pygame.QUIT:
-    #         run = False
 
-    # counter -= 1
-    # if (counter % 10) == 0:
-    #     print(counter)
-    # if not counter:
-    #     counter = 3000
-    #     player_car.reset()
     keys = pygame.key.get_pressed()
     clock.tick(FPS)
 
@@ -194,6 +192,12 @@ while run:
                 game_bar.select_level(4)
 
         # Реализация фона и скинов
+    game_bar.counter -= 1
+
+    if not game_bar.counter:
+        game_bar.counter = 3000
+        player_car.reset()
+
     pictures(img_disk, WIN, player_car)
     pygame.display.update()
     for event in pygame.event.get():
