@@ -14,6 +14,8 @@ FINISH = pygame.image.load("asets/finish.png")
 FINISH_MASK = pygame.mask.from_surface(FINISH)
 FINISH_POSITION = (138, 240)
 
+WIN_IMG = flatten(pygame.image.load("asets/win.png"), 0.85)
+
 
 
 RED_CAR = flatten(pygame.image.load("asets/red-car.png"), 0.15)
@@ -34,11 +36,11 @@ FPS = 90
 
 class GameBar:
 
-    TIME = [3000, 1000, 950, 900, 870]
-    SPEED = [4, 5 , 6 ,7, 8]
+    TIME = [3000, 1500, 1200, 1000, 950]
+    SPEED = [4, 50 , 6 ,7, 8]
     ROTATION = [6, 7, 7, 7, 7]
 
-    LEVELS = 5
+    LEVELS = 4
 
     def __init__(self, level = 0):
         self.level = level
@@ -48,8 +50,14 @@ class GameBar:
         self.counter = self.TIME[level]
     def next_level(self):
         self.level += 1
-        self.statrted = False
-
+        if self.level > self.LEVELS:
+            game_bar.game_finished()
+        else:
+            self.statrted = True
+            self.counter = self.TIME[self.level]
+            player_car.speed = self.SPEED[self.level]
+            player_car.rotation = self.ROTATION[self.level]
+            player_car.start_position()
     def select_level(self, level):
         self.level = level
         player_car.configuration(level)
@@ -63,11 +71,20 @@ class GameBar:
         self.counter = self.TIME[self.level]
 
     def game_finished(self):
+        #blit_text_center(WIN, MAIN_FONT, "Congratilations you passed all levels")
+        #player_car.vel = 0
+        WIN.blit(WIN_IMG, (0, 0))
+        pygame.display.update()
+        # for event in pygame.event.get():
+        #     if event.type == pygame.QUIT:
+        #         pygame.quit()
+        # self.statrted = False
+        pygame.quit()
         return self.level > self.LEVELS
 
     def start(self):
         self.statrted = True
-        self.time = self.TIME[self.level]
+        self.counter = self.TIME[self.level]
 
 
 
@@ -79,7 +96,9 @@ class Car:
 
 
     IMG = RED_CAR # Поскольку задумка изменена и машина будет только одна я добавил передачу прямо в классе , !!!! Можно улучшить читабельность перед здачей если закинуть в инит
+
     START_POS = (160, 180) # так, же можно передать сразу, являются индивидуальными для класса
+    #START_POS = (160, 300) # для тестов
     def __init__(self, max_speed, rotation_speed):
         self.img = self.IMG
         self.max_speed = max_speed
@@ -133,10 +152,14 @@ class Car:
         self.vel = 0
         game_bar.reset_level()
 
+    def start_position(self):
+        self.x, self.y = self.START_POS
+        self.angle = 0
+        self.vel = 0
     def configuration(self, level):
         self.max_speed = game_bar.SPEED[level]
         self.rotation_speed = game_bar.ROTATION[level]
-        counter = game_bar.TIME[level]
+        self.counter = game_bar.TIME[level]
 
 def pictures(imageges, win, player_car):
     for img, pos in imageges:
@@ -224,16 +247,20 @@ while run:
 
     if player_car.collide(TRACK_BORDER_MASK) is not None:
         player_car.reset()
-        counter = 3000
 
     finish_poi_collide = player_car.collide(FINISH_MASK, *FINISH_POSITION)
     if finish_poi_collide is not None:
         if finish_poi_collide[1] == 0:
+
             player_car.reset()
             print('WRONG DIRRECTION')
-            counter = 3000
 
         else:
-            print('WIN!!')
-            run = False
+            if  (game_bar.level < game_bar.LEVELS):
+                game_bar.next_level()
+            else:
+                game_bar.counter = 9999
+                game_bar.game_finished()
+
+
 pygame.quit()
