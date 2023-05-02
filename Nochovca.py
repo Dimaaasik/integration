@@ -35,7 +35,6 @@ pygame.display.set_caption("Test Game")
 
 FPS = 90
 
-
 class GameBar:
 
     TIME = [3000, 1500, 1200, 1000, 950]
