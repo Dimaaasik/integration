@@ -1,5 +1,5 @@
 import pytest
-from Nochovca import TRACK, TRACK_BORDER, FINISH_POSITION, RED_CAR
+from Nochovca import TRACK, TRACK_BORDER, FINISH_POSITION, RED_CAR, GameBar, Car
 
 def test_pytest():
     assert (3 + 4) == 7
@@ -16,7 +16,26 @@ def test_car_width():
 def test_car_height():
     assert RED_CAR.get_height() < (TRACK.get_height() / 5)
 
+def test_car_min_height():
+    assert RED_CAR.get_height() >= 15
 
+def test_car_min_width():
+    assert RED_CAR.get_width() >= 4
 
-if __name__ == '__main__':
-    pytest.main()
+def test_game_time():
+    time = GameBar.TIME
+    assert min(time) >= 950
+
+def test_car_speed():
+    speed = GameBar.SPEED
+    assert max(speed) <= 15
+
+def test_car_rotation():
+    rotation = GameBar.ROTATION
+    assert max(rotation) <= 12
+
+def test_initialization_car_height():
+    assert Car.START_POS[0] - (RED_CAR.get_height() / 2) > FINISH_POSITION[0]
+
+# if __name__ == '__main__':
+#     pytest.main()
