@@ -7,12 +7,13 @@ pygame.font.init()
 
 GRASS = flatten(pygame.image.load("asets/grass.jpg"), 0.37)
 TRACK = flatten(pygame.image.load("asets/track.png"), 0.9)
-
 TRACK_BORDER = flatten(pygame.image.load("asets/track-border.png"), 0.9)
 TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
 FINISH = pygame.image.load("asets/finish.png")
 FINISH_MASK = pygame.mask.from_surface(FINISH)
+
 FINISH_POSITION = (138, 240)
+
 
 WIN_IMG = flatten(pygame.image.load("asets/win.png"), 0.85)
 
@@ -20,8 +21,12 @@ WIN_IMG = flatten(pygame.image.load("asets/win.png"), 0.85)
 
 RED_CAR = flatten(pygame.image.load("asets/red-car.png"), 0.15)
 
+print(RED_CAR)
+print(TRACK.get_height())
+
 HEIGHT = TRACK.get_height()
 WIDTH = TRACK.get_width()
+
 
 MAIN_FONT = pygame.font.SysFont("comicsans", 41)
 
@@ -107,8 +112,8 @@ class Car:
 
     IMG = RED_CAR
 
-    #START_POS = (160, 180)
-    START_POS = (160, 300) # Cheat ^^
+    START_POS = (160, 180)
+    #START_POS = (160, 300) # Cheat ^^
     def __init__(self, max_speed:float, rotation_speed:float):
         self.img = self.IMG
         self.max_speed = max_speed
