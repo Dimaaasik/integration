@@ -1,9 +1,6 @@
 import pytest
 from Nochovca import TRACK, TRACK_BORDER, FINISH_POSITION, RED_CAR, GameBar, Car
 
-def test_pytest():
-    assert (3 + 4) == 7
-
 def test_overlay():
     assert TRACK.get_height() == TRACK_BORDER.get_height()
 
@@ -16,11 +13,11 @@ def test_car_width():
 def test_car_height():
     assert RED_CAR.get_height() < (TRACK.get_height() / 5)
 
-def test_car_min_height():
-    assert RED_CAR.get_height() >= 15
-
-def test_car_min_width():
-    assert RED_CAR.get_width() >= 4
+# def test_car_min_height():
+#     assert RED_CAR.get_height() >= 15
+#
+# def test_car_min_width():
+#     assert RED_CAR.get_width() >= 4
 
 def test_game_time():
     time = GameBar.TIME
@@ -37,5 +34,20 @@ def test_car_rotation():
 def test_initialization_car_height():
     assert Car.START_POS[0] - (RED_CAR.get_height() / 2) > FINISH_POSITION[0]
 
+
+def _func(a, b):
+    return a >= b
+
+@pytest.fixture()
+def func():
+    return _func
+
+@pytest.mark.parametrize('property_car, test, result', [
+    (RED_CAR.get_height(), 15, True),
+    (RED_CAR.get_width(), 4, True)
+])
+
+def test_car_properties(property_car, test, result, func):
+    assert func(property_car, test) == result
 # if __name__ == '__main__':
 #     pytest.main()
